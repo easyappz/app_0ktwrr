@@ -1,0 +1,54 @@
+post:
+  summary: Login user
+  description: Authenticates a user and returns an authentication token
+  operationId: authLogin
+  tags:
+    - Authentication
+  isSecure: false
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          type: object
+          required:
+            - username
+            - password
+          properties:
+            username:
+              type: string
+              minLength: 1
+              maxLength: 150
+              description: Username of the account
+            password:
+              type: string
+              minLength: 1
+              description: Password of the account
+  responses:
+    '200':
+      description: Login successful
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              token:
+                type: string
+                description: Authentication token to use in subsequent requests
+              user:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                  username:
+                    type: string
+    '400':
+      description: Bad request - invalid credentials
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              detail:
+                type: string
+                example: "Invalid credentials"
