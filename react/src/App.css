@@ -1,38 +1,258 @@
-.App {
-  text-align: center;
+/* Slack-inspired Corporate Theme */
+
+/* CSS Variables for Slack theme */
+:root {
+  --slack-aubergine: #4A154B;
+  --slack-aubergine-dark: #3D1140;
+  --slack-aubergine-light: #611f69;
+  --slack-green: #2EB67D;
+  --slack-blue: #36C5F0;
+  --slack-yellow: #ECB22E;
+  --slack-red: #E01E5A;
+  --slack-white: #FFFFFF;
+  --slack-gray-100: #F8F8F8;
+  --slack-gray-200: #EEEEEE;
+  --slack-gray-300: #DDDDDD;
+  --slack-gray-400: #BBBBBB;
+  --slack-gray-500: #888888;
+  --slack-gray-600: #616061;
+  --slack-gray-700: #1D1C1D;
+  --slack-hover: rgba(255, 255, 255, 0.1);
+  --slack-active: rgba(255, 255, 255, 0.2);
+  --sidebar-width: 260px;
+  --header-height: 56px;
+  --transition-fast: 0.15s ease;
+  --transition-normal: 0.25s ease;
+  --border-radius-sm: 4px;
+  --border-radius-md: 8px;
+  --border-radius-lg: 12px;
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.1);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.15);
+  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.2);
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+/* Global Reset */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
+body {
+  font-family: 'Lato', 'Segoe UI', 'Roboto', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 15px;
+  line-height: 1.46668;
+  color: var(--slack-gray-700);
+  background-color: var(--slack-white);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
-.App-header {
-  background-color: #282c34;
+/* App Container */
+.app {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+  background-color: var(--slack-gray-100);
+}
+
+/* Main Content Area */
+.main-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.main-content.with-header {
+  min-height: calc(100vh - var(--header-height));
+}
+
+/* Header Styles */
+.header {
+  height: var(--header-height);
+  background-color: var(--slack-aubergine);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 20px;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  box-shadow: var(--shadow-sm);
+}
+
+.header-logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--slack-white);
+  font-weight: 700;
+  font-size: 18px;
+  text-decoration: none;
+}
+
+.header-logo-icon {
+  width: 32px;
+  height: 32px;
+  background: linear-gradient(135deg, var(--slack-blue), var(--slack-green));
+  border-radius: var(--border-radius-sm);
+  display: flex;
   align-items: center;
   justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
+  font-weight: 900;
+  font-size: 20px;
 }
 
-.App-link {
-  color: #61dafb;
+.header-nav {
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
-@keyframes App-logo-spin {
+.header-nav-link {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  color: var(--slack-white);
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 14px;
+  border-radius: var(--border-radius-sm);
+  transition: background-color var(--transition-fast);
+}
+
+.header-nav-link:hover {
+  background-color: var(--slack-hover);
+}
+
+.header-nav-link.active {
+  background-color: var(--slack-active);
+}
+
+.header-nav-link svg {
+  width: 18px;
+  height: 18px;
+}
+
+.header-user {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.header-username {
+  color: var(--slack-white);
+  font-weight: 500;
+  font-size: 14px;
+}
+
+.header-logout-btn {
+  padding: 8px 16px;
+  background-color: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: var(--slack-white);
+  font-size: 14px;
+  font-weight: 500;
+  border-radius: var(--border-radius-sm);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.header-logout-btn:hover {
+  background-color: var(--slack-white);
+  color: var(--slack-aubergine);
+}
+
+/* Utility Classes */
+.text-center {
+  text-align: center;
+}
+
+.text-muted {
+  color: var(--slack-gray-500);
+}
+
+/* Scrollbar Styles */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--slack-gray-200);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--slack-gray-400);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--slack-gray-500);
+}
+
+/* Animation Keyframes */
+@keyframes fadeIn {
   from {
-    transform: rotate(0deg);
+    opacity: 0;
+    transform: translateY(10px);
   }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+/* Loading Spinner */
+.spinner {
+  width: 32px;
+  height: 32px;
+  border: 3px solid var(--slack-gray-300);
+  border-top-color: var(--slack-aubergine);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
   to {
     transform: rotate(360deg);
   }
+}
+
+/* Focus States */
+*:focus {
+  outline: none;
+}
+
+*:focus-visible {
+  outline: 2px solid var(--slack-blue);
+  outline-offset: 2px;
+}
+
+/* Selection */
+::selection {
+  background-color: var(--slack-aubergine-light);
+  color: var(--slack-white);
 }
