@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.hashers import make_password, check_password as django_check_password
+import secrets
 
 
 class Member(models.Model):
@@ -48,6 +49,36 @@ class Member(models.Model):
     def has_module_perms(self, app_label):
         """Return True if the user has permissions to view the app."""
         return True
+
+
+class AuthToken(models.Model):
+    """
+    Authentication token model for Member.
+    """
+    key = models.CharField(max_length=64, unique=True, primary_key=True)
+    member = models.ForeignKey(
+        Member,
+        on_delete=models.CASCADE,
+        related_name='auth_tokens'
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        db_table = 'api_authtoken'
+        verbose_name = 'Auth Token'
+        verbose_name_plural = 'Auth Tokens'
+
+    def __str__(self):
+        return f"Token for {self.member.username}"
+
+    def save(self, *args, **kwargs):
+        if not self.key:
+            self.key = self.generate_key()
+        return super().save(*args, **kwargs)
+
+    @classmethod
+    def generate_key(cls):
+        return secrets.token_hex(32)
 
 
 class Message(models.Model):
