@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Member
+from .models import Member, Message
 
 
 class MemberRegistrationSerializer(serializers.Serializer):
@@ -44,6 +44,50 @@ class MemberProfileUpdateSerializer(serializers.ModelSerializer):
         fields = ['email', 'first_name', 'last_name']
 
 
-class MessageSerializer(serializers.Serializer):
+class HelloMessageSerializer(serializers.Serializer):
+    """Serializer for hello endpoint."""
     message = serializers.CharField(max_length=200)
     timestamp = serializers.DateTimeField(read_only=True)
+
+
+class MessageSerializer(serializers.ModelSerializer):
+    """
+    Serializer for Message model.
+    Returns: id, content, author (username), created_at, updated_at, is_edited
+    """
+    author = serializers.CharField(source='author.username', read_only=True)
+
+    class Meta:
+        model = Message
+        fields = ['id', 'content', 'author', 'created_at', 'updated_at', 'is_edited']
+        read_only_fields = ['id', 'author', 'created_at', 'updated_at', 'is_edited']
+
+
+class MessageCreateSerializer(serializers.Serializer):
+    """
+    Serializer for creating a new message.
+    Accepts: content
+    """
+    content = serializers.CharField(min_length=1)
+
+    def create(self, validated_data):
+        author = self.context['request'].user
+        message = Message.objects.create(
+            content=validated_data['content'],
+            author=author
+        )
+        return message
+
+
+class MessageUpdateSerializer(serializers.Serializer):
+    """
+    Serializer for updating a message.
+    Accepts: content
+    """
+    content = serializers.CharField(min_length=1)
+
+    def update(self, instance, validated_data):
+        instance.content = validated_data['content']
+        instance.is_edited = True
+        instance.save()
+        return instance

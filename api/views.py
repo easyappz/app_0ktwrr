@@ -3,14 +3,18 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from django.utils import timezone
+from django.shortcuts import get_object_or_404
 
-from .models import Member, AuthToken
+from .models import Member, AuthToken, Message
 from .serializers import (
     MemberRegistrationSerializer,
     MemberLoginSerializer,
     MemberProfileSerializer,
     MemberProfileUpdateSerializer,
+    HelloMessageSerializer,
     MessageSerializer,
+    MessageCreateSerializer,
+    MessageUpdateSerializer,
 )
 from .authentication import TokenAuthentication
 
@@ -134,5 +138,81 @@ class HelloView(APIView):
 
     def get(self, request):
         data = {"message": "Hello!", "timestamp": timezone.now()}
-        serializer = MessageSerializer(data)
+        serializer = HelloMessageSerializer(data)
         return Response(serializer.data)
+
+
+class MessageListCreateView(APIView):
+    """
+    List all messages or create a new message.
+    GET /api/messages/ - Get list of all chat messages
+    POST /api/messages/ - Send a new message
+    """
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        """Get list of all chat messages."""
+        messages = Message.objects.all().select_related('author')
+        serializer = MessageSerializer(messages, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    def post(self, request):
+        """Create a new message."""
+        serializer = MessageCreateSerializer(
+            data=request.data,
+            context={'request': request}
+        )
+        if serializer.is_valid():
+            message = serializer.save()
+            response_serializer = MessageSerializer(message)
+            return Response(response_serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class MessageUpdateDeleteView(APIView):
+    """
+    Update or delete a message.
+    PUT /api/messages/{id}/ - Edit a message (only author)
+    DELETE /api/messages/{id}/ - Delete a message (only author)
+    """
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated]
+
+    def get_object(self, pk):
+        """Get message by id or return 404."""
+        return get_object_or_404(Message, pk=pk)
+
+    def check_author_permission(self, message, user):
+        """Check if user is the author of the message."""
+        return message.author.id == user.id
+
+    def put(self, request, pk):
+        """Update a message. Only the author can edit."""
+        message = self.get_object(pk)
+        
+        if not self.check_author_permission(message, request.user):
+            return Response(
+                {'detail': 'Permission denied - not the author'},
+                status=status.HTTP_403_FORBIDDEN
+            )
+        
+        serializer = MessageUpdateSerializer(data=request.data)
+        if serializer.is_valid():
+            updated_message = serializer.update(message, serializer.validated_data)
+            response_serializer = MessageSerializer(updated_message)
+            return Response(response_serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request, pk):
+        """Delete a message. Only the author can delete."""
+        message = self.get_object(pk)
+        
+        if not self.check_author_permission(message, request.user):
+            return Response(
+                {'detail': 'Permission denied - not the author'},
+                status=status.HTTP_403_FORBIDDEN
+            )
+        
+        message.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)

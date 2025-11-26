@@ -5,6 +5,8 @@ from .views import (
     LoginView,
     LogoutView,
     ProfileView,
+    MessageListCreateView,
+    MessageUpdateDeleteView,
 )
 
 urlpatterns = [
@@ -13,4 +15,6 @@ urlpatterns = [
     path("auth/login/", LoginView.as_view(), name="auth-login"),
     path("auth/logout/", LogoutView.as_view(), name="auth-logout"),
     path("profile/", ProfileView.as_view(), name="profile"),
+    path("messages/", MessageListCreateView.as_view(), name="messages-list"),
+    path("messages/<int:pk>/", MessageUpdateDeleteView.as_view(), name="messages-detail"),
 ]
