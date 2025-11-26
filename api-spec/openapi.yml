@@ -1,7 +1,7 @@
 openapi: 3.0.3
 info:
   title: Auth API
-  description: API for user authentication and profile management
+  description: API for user authentication, profile management and chat
   version: 1.0.0
 
 servers:
@@ -17,6 +17,10 @@ paths:
     $ref: './paths/auth-logout.yml'
   /profile/:
     $ref: './paths/profile.yml'
+  /messages/:
+    $ref: './paths/messages-list.yml'
+  /messages/{id}/:
+    $ref: './paths/messages-detail.yml'
 
 components:
   securitySchemes:
@@ -50,6 +54,35 @@ components:
           type: string
           format: date-time
           readOnly: true
+
+    Message:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+          description: Unique message identifier
+        content:
+          type: string
+          description: Message content
+        author:
+          type: string
+          readOnly: true
+          description: Username of the message author
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+          description: Timestamp when the message was created
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+          description: Timestamp when the message was last updated
+        is_edited:
+          type: boolean
+          readOnly: true
+          description: Whether the message has been edited
 
     Error:
       type: object

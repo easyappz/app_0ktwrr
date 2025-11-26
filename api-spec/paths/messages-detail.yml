@@ -1,0 +1,100 @@
+# PUT /api/messages/{id}/ - Edit a message
+# DELETE /api/messages/{id}/ - Delete a message
+# isSecure: true
+
+put:
+  summary: Edit a message
+  description: Updates an existing message. Only the author can edit their message.
+  operationId: updateMessage
+  tags:
+    - Messages
+  security:
+    - TokenAuth: []
+  parameters:
+    - name: id
+      in: path
+      required: true
+      description: Message ID
+      schema:
+        type: integer
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          type: object
+          required:
+            - content
+          properties:
+            content:
+              type: string
+              description: Updated message content
+              minLength: 1
+  responses:
+    '200':
+      description: Message updated successfully
+      content:
+        application/json:
+          schema:
+            $ref: '../openapi.yml#/components/schemas/Message'
+    '400':
+      description: Invalid request data
+      content:
+        application/json:
+          schema:
+            $ref: '../openapi.yml#/components/schemas/Error'
+    '401':
+      description: Authentication required
+      content:
+        application/json:
+          schema:
+            $ref: '../openapi.yml#/components/schemas/Error'
+    '403':
+      description: Permission denied - not the author
+      content:
+        application/json:
+          schema:
+            $ref: '../openapi.yml#/components/schemas/Error'
+    '404':
+      description: Message not found
+      content:
+        application/json:
+          schema:
+            $ref: '../openapi.yml#/components/schemas/Error'
+
+delete:
+  summary: Delete a message
+  description: Deletes an existing message. Only the author can delete their message.
+  operationId: deleteMessage
+  tags:
+    - Messages
+  security:
+    - TokenAuth: []
+  parameters:
+    - name: id
+      in: path
+      required: true
+      description: Message ID
+      schema:
+        type: integer
+  responses:
+    '204':
+      description: Message deleted successfully
+    '401':
+      description: Authentication required
+      content:
+        application/json:
+          schema:
+            $ref: '../openapi.yml#/components/schemas/Error'
+    '403':
+      description: Permission denied - not the author
+      content:
+        application/json:
+          schema:
+            $ref: '../openapi.yml#/components/schemas/Error'
+    '404':
+      description: Message not found
+      content:
+        application/json:
+          schema:
+            $ref: '../openapi.yml#/components/schemas/Error'
